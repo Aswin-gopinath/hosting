@@ -116,6 +116,7 @@
   <link rel="stylesheet" href="/stylesheets/assets/css/bootstrap.min.css">
   <!-- Main CSS File -->
   <link rel="stylesheet" href="/stylesheets/assets/css/style.css">
+ 
 </head>
 
 
@@ -147,7 +148,7 @@
 
 
 
-              <form id="discount-coupon" >
+              <form id="discount-coupon">
                 <input type="text" class="form-control" required name="coupon">
                 <label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to enter your
                     code</span> </label>
@@ -158,18 +159,29 @@
 
             </div><!-- End .checkout-discount -->
 
+            <aside class="col-lg-3" style="width:240px ">
+                  <div class="summary">
+              
+              <button id="setAddress">
+        Use this address
+    </button>
+              <br>
+              <p style="font-style:italic; margin-top:10px">{{savedAddress.address}}<br>{{savedAddress.city}}<br>{{savedAddress.pincode}}<br>{{savedAddress.state}}</p>
+              </label>
+            </div>
+            </aside>
 
             <form action="" id="checkout-form">
               <div class="row">
                 <div class="col-lg-9">
                   <h2 class="checkout-title">Billing Details</h2><!-- End .checkout-title -->
-                
+
 
                   <label>Nick Name (Optional)</label>
                   <input type="text" class="form-control">
 
                   <label>Country *</label>
-                  <input type="text" class="form-control" required>
+                  <input type="text" class="form-control" id="country" value="" required>
 
                   <label>Street address *</label>
                   <input type="text" class="form-control" id="address" name="address">
@@ -182,7 +194,7 @@
 
                     <div class="col-sm-6">
                       <label>State / County *</label>
-                      <input type="text" class="form-control" required>
+                      <input type="text" class="form-control" id="state" required>
                     </div><!-- End .col-sm-6 -->
                   </div><!-- End .row -->
 
@@ -574,7 +586,7 @@
         method: 'post',
         data: $('#discount-coupon').serialize(),
         success: (response) => {
-          
+
           if (response.actual) {
             document.getElementById('total-amount').innerHTML = response.totalAmount
             document.getElementById('off-amount').innerHTML = response.discount
@@ -589,6 +601,7 @@
   <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     $("#checkout-form").submit((e) => {
+      console.log("post 0")
       e.preventDefault()
       $.ajax({
         url: '/place-order',
@@ -605,7 +618,8 @@
       })
     }
     )
-    function razorpayPayment(order) {
+    function razorpayPayment(order) 
+    {
       var options = {
         "key": "rzp_test_6A230dvVXNYFZ2", // Enter the Key ID generated from the Dashboard
         "amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
@@ -614,7 +628,8 @@
         "description": "Test Transaction",
         "image": "https://example.com/your_logo",
         "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-        "handler": function (response) {
+        "handler": function (response) 
+        {
           alert(response.razorpay_payment_id);
           alert(response.razorpay_order_id);
           alert(response.razorpay_signature)
@@ -632,30 +647,53 @@
         "theme": {
           "color": "#3399cc"
         }
+        
       }
       var rzp1 = new Razorpay(options);
       rzp1.open();
     }
 
     function verifyPayment(payment, order) {
-      $.ajax({
-        url: 'verify-payment',
-        data: {
-          payment, order
-        },
-        method: 'post',
-        success: (response) => {
-          console.log("hi helloooooooooooooooooooooooooooooooooooooooooooo")
-          alert(response)
-            if (response.status) {
-              location.href = '/order-success'
-            } else {
-              {{!-- alert("Payment failed") --}}
-            }
-          }
-      })
+  $.ajax({
+    url: 'verify-payment',
+    data: {
+      payment, order
+    },
+    method: 'post',
+    success: (response) => {
+      console.log("hi helloooooooooooooooooooooooooooooooooooooooooooo")
+      alert(response)
+      if (response.status) {
+        location.href = '/order-success'
+      } else {
+        { alert("Payment failed") }
+      }
     }
+  })
+}
   </script>
+ 
+  <script>
+        $("#setAddress").click(function(event) {
+            $('#country').val("India");
+        });
+        $("#setAddress").click(function(event) {
+            $('#address').val('{{savedAddress.address}}');
+        });
+        $("#setAddress").click(function(event) {
+            $('#state').val('{{savedAddress.state}}');
+        });
+        $("#setAddress").click(function(event) {
+            $('#city').val('{{savedAddress.city}}');
+        });
+        $("#setAddress").click(function(event) {
+            $('#pincode').val('{{savedAddress.pincode}}');
+        });
+        $("#setAddress").click(function(event) {
+            $('#mobile').val('{{savedAddress.mobile}}');
+        });
+    </script>
+
   <!-- Plugins JS File -->
   <script src="/stylesheets/assets/js/jquery.min.js"></script>
   <script src="/stylesheets/assets/js/bootstrap.bundle.min.js"></script>
